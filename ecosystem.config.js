@@ -1,13 +1,21 @@
+const fs = require("fs");
 const path = require("path");
 
-// PM2 chạy trong WSL → process.platform là "linux", dùng Python của venv Linux.
-// Tạo venv trong WSL (không dùng chung venv Windows):  python3 -m venv venv && ./venv/bin/pip install -r requirements.txt
-//
-// Nếu vẫn start PM2 từ Windows (PowerShell): nhánh win32 dùng python.exe trong venv Windows.
-const pythonBin =
-  process.platform === "win32"
-    ? path.join(__dirname, "venv", "Scripts", "python.exe")
-    : path.join(__dirname, "venv", "bin", "python");
+/** Ưu tiên `.venv` rồi tới `venv` — PM2 không đọc shell đã `activate`; phải trỏ đúng binary. */
+function resolveVenvPython() {
+  const isWin = process.platform === "win32";
+  const names = [".venv", "venv"];
+  const rel = isWin
+    ? ["Scripts", "python.exe"]
+    : ["bin", "python"];
+  for (const dir of names) {
+    const p = path.join(__dirname, dir, ...rel);
+    if (fs.existsSync(p)) return p;
+  }
+  return path.join(__dirname, "venv", ...rel);
+}
+
+const pythonBin = resolveVenvPython();
 
 module.exports = {
   apps: [

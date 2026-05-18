@@ -1,0 +1,26 @@
+{
+  "content": "",
+  "username": "NSMB Store",
+  "embeds": [
+    {
+      "title": "🔔 Your update is live",
+      "color": 3066993,
+      "fields": [
+        {
+          "name": "📧 From",
+          "value": "NSMB Store",
+          "inline": true
+        },
+        {
+          "name": "📅 Date",
+          "value": "2026-05-18 11:40:46",
+          "inline": true
+        }
+      ],
+      "description": "**📝 Content**\n> Hello,\n> Your update to AllTV: Smart Remote Control, created on May 18, 2026 at 3:21AM GMT, is live in the store.\n> AllTV: Smart Remote Control*\n> **com.universal.cast.tv.remote.control**\n> If you don't want to receive notifications when app updates go live, update your email notification settings\n> .",
+      "footer": {
+        "text": "Message ID: 19e3962f46a5ff99"
+      }
+    }
+  ]
+}

@@ -47,18 +47,42 @@ SOURCE_CHANNEL_ID_RAW: str | None = os.getenv("SOURCE_CHANNEL_ID")
 CHANNEL_MAP_JSON_RAW: str | None = os.getenv("CHANNEL_MAP_JSON")
 
 
-def get_settings() -> tuple[str, int, dict[str, int]]:
+def _parse_source_channel_ids(raw: str) -> list[int]:
+    """Parse one or more channel ids: single int or comma-separated list (e.g. Play + Firebase)."""
+    text = raw.strip()
+    if not text:
+        return []
+    segments = [s.strip() for s in text.split(",") if s.strip()]
+    if not segments:
+        return []
+    out: list[int] = []
+    for seg in segments:
+        try:
+            out.append(int(seg))
+        except ValueError as e:
+            raise RuntimeError(
+                f"SOURCE_CHANNEL_ID segment {seg!r} must be an integer (use commas between multiple ids)."
+            ) from e
+    seen: set[int] = set()
+    unique: list[int] = []
+    for cid in out:
+        if cid not in seen:
+            seen.add(cid)
+            unique.append(cid)
+    return unique
+
+
+def get_settings() -> tuple[str, frozenset[int], dict[str, int]]:
     if not DISCORD_TOKEN or not DISCORD_TOKEN.strip():
         raise RuntimeError("Missing DISCORD_TOKEN in environment or .env")
     if not SOURCE_CHANNEL_ID_RAW or not SOURCE_CHANNEL_ID_RAW.strip():
         raise RuntimeError("Missing SOURCE_CHANNEL_ID in environment or .env")
-    try:
-        source_id = int(SOURCE_CHANNEL_ID_RAW.strip())
-    except ValueError as e:
-        raise RuntimeError("SOURCE_CHANNEL_ID must be an integer.") from e
+    source_ids = _parse_source_channel_ids(SOURCE_CHANNEL_ID_RAW)
+    if not source_ids:
+        raise RuntimeError("SOURCE_CHANNEL_ID must contain at least one numeric channel id.")
     if not CHANNEL_MAP_JSON_RAW or not CHANNEL_MAP_JSON_RAW.strip():
         raise RuntimeError("Missing CHANNEL_MAP_JSON in environment or .env")
     channel_map = _parse_channel_map(CHANNEL_MAP_JSON_RAW)
     if not channel_map:
         raise RuntimeError("CHANNEL_MAP_JSON parsed to an empty map; add at least one entry.")
-    return DISCORD_TOKEN.strip(), source_id, channel_map
+    return DISCORD_TOKEN.strip(), frozenset(source_ids), channel_map

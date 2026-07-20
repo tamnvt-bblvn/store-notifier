@@ -1,0 +1,22 @@
+{
+  "name": "slack-to-discord-bot",
+  "version": "1.0.0",
+  "description": "Slack to Discord forwarding bot",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "@slack/bolt": "^4.7.3",
+    "axios": "^1.18.1",
+    "better-sqlite3": "^12.11.1",
+    "discord.js": "^14.27.0",
+    "dotenv": "^17.4.2",
+    "ngrok": "latest"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
